@@ -5,7 +5,7 @@ module BotManager
 
   module Alexa
 
-    class AccountLinkingRequest
+    class AccountLinkingRequestBuilder
 
       attr_accessor :skip_on_enablement, :type, :authorization_url, :client_id, :client_secret, :access_token_url, :access_token_scheme, :default_token_expiration_in_seconds
 
