@@ -4,7 +4,7 @@ module BotManager
 
   module Lex
 
-    class Slot
+    class SlotType
 
       attr_reader :name, :description, :enumeration_values
 
