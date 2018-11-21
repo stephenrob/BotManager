@@ -15,8 +15,8 @@ module BotManager
           @validations = Set.new
           @name = name
           @type = type
-          @confirmation_required = confirmation_required,
-              @elicitation_required = elicitation_required
+          @confirmation_required = confirmation_required
+          @elicitation_required = elicitation_required
         end
 
         def set_elicitation elicitation
