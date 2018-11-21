@@ -18,6 +18,14 @@ module BotManager
         @enumeration_values.add enumeration_value.to_h
       end
 
+      def to_h
+        {
+            name: name,
+            description: description,
+            enumeration_values: enumeration_values.to_a
+        }
+      end
+
     end
 
   end

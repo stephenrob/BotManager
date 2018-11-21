@@ -29,7 +29,7 @@ module BotManager
         @clarification_prompt = clarification_prompt.to_h
       end
 
-      def set_about_statement abort_statement
+      def set_abort_statement abort_statement
         @abort_statement = abort_statement.to_h
       end
 

@@ -8,8 +8,8 @@ module BotManager
 
       attr_reader :slot
 
-      def initialize file_path
-        @slot = JSON.parse(File.read(file_path), :symbolize_names => true)
+      def initialize slot
+        @slot = slot
       end
 
       def name
