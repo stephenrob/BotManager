@@ -1,4 +1,5 @@
 require 'oauth2'
+require_relative 'endpoints/skill_management'
 
 module BotManager
 
@@ -8,7 +9,11 @@ module BotManager
 
       class Client < ::OAuth2::AccessToken
 
+        include Endpoints::SkillManagement
+
         def initialize client_id, client_secret, refresh_token
+
+          Faraday::Utils.default_params_encoder = Faraday::FlatParamsEncoder
 
           oauth2 = OAuth2::Client.new client_id,
                              client_secret,
