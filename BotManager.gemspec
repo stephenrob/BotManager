@@ -41,4 +41,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest", "~> 5.0"
 
   spec.add_dependency "aws-sdk-lexmodelbuildingservice", "~> 1.10.0"
+  spec.add_dependency "oauth2", "~> 1.4.1"
 end
