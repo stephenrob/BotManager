@@ -8,7 +8,7 @@ module BotManager
 
         module SkillValidation
 
-          def validate_skill skill_id, locales=[] stage='development'
+          def validate_skill skill_id, locales=[], stage='development'
 
             endpoint = "/v1/skills/#{skill_id}/stages/#{stage}/validations"
 
