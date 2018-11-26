@@ -4,6 +4,7 @@ require_relative 'endpoints/interaction_model_management'
 require_relative 'endpoints/account_linking_management'
 require_relative 'endpoints/beta_test_management'
 require_relative 'endpoints/skill_validation'
+require_relative 'endpoints/vendor_management'
 
 module BotManager
 
@@ -18,6 +19,7 @@ module BotManager
         include Endpoints::AccountLinkingManagement
         include Endpoints::BetaTestManagement
         include Endpoints::SkillValidation
+        include Endpoints::VendorManagement
 
         def initialize client_id, client_secret, refresh_token
 
