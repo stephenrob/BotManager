@@ -2,6 +2,7 @@ require 'oauth2'
 require_relative 'endpoints/skill_management'
 require_relative 'endpoints/interaction_model_management'
 require_relative 'endpoints/account_linking_management'
+require_relative 'endpoints/beta_test_management'
 
 module BotManager
 
@@ -14,6 +15,7 @@ module BotManager
         include Endpoints::SkillManagement
         include Endpoints::InteractionModelManagement
         include Endpoints::AccountLinkingManagement
+        include Endpoints::BetaTestManagement
 
         def initialize client_id, client_secret, refresh_token
 
