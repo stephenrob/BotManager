@@ -1,5 +1,6 @@
 require 'oauth2'
 require_relative 'endpoints/skill_management'
+require_relative 'endpoints/interaction_model_management'
 
 module BotManager
 
@@ -10,6 +11,7 @@ module BotManager
       class Client < ::OAuth2::AccessToken
 
         include Endpoints::SkillManagement
+        include Endpoints::InteractionModelManagement
 
         def initialize client_id, client_secret, refresh_token
 
