@@ -10,17 +10,19 @@ require 'BotManager/lex/abort_statement'
 require 'BotManager/lex/conclusion_statement'
 require 'BotManager/lex/value_elicitation_prompt'
 require 'BotManager/lex/clarification_prompt'
+require 'BotManager/alexa/manager'
 
 module BotManager
 
   class Client
 
-    def initialize release_file
+    def initialize release_file, alexa_config={}
       @releases = JSON.parse(File.read(release_file), :symbolize_names => true)
       @slot_types = []
       @intents = []
       @bots = []
       @lex_manager = Lex::Manager.new
+      @alexa_manager = Alexa::Manager.new alexa_config[:client_id], alexa_config[:client_secret], alexa_config[:refresh_token]
     end
 
     def load_slot_type slot_type_file
