@@ -16,7 +16,7 @@ module BotManager
   class Client
 
     def initialize release_file
-      @releases = JSON.parse(File.read(release_file))
+      @releases = JSON.parse(File.read(release_file), :symbolize_names => true)
       @slot_types = []
       @intents = []
       @bots = []
