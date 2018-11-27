@@ -12,7 +12,7 @@ module BotManager
 
             endpoint = "/v1/skills?vendorId=#{vendor_id}"
 
-            if (!skill_ids.nil? || !skill_ids.empty?) && skill_ids.length < 10
+            if (!skill_ids.nil? && !skill_ids.empty?) && skill_ids.length < 10
 
               skill_ids_param = ''
 
@@ -25,11 +25,11 @@ module BotManager
 
             end
 
-            if (skill_ids.nil? || skill_ids.empty?) && (!max_results.nil? || !max_results.empty?)
+            if (skill_ids.nil? || skill_ids.empty?) && (!max_results.nil? && !max_results.to_s.empty?)
               endpoint += "&maxResults=#{max_results}"
             end
 
-            if (skill_ids.nil? || skill_ids.empty?) && (!next_token.nil? || !next_token.empty?)
+            if (skill_ids.nil? || skill_ids.empty?) && (!next_token.nil? && !next_token.empty?)
               endpoint += "&nextToken=#{next_token}"
             end
 

@@ -52,11 +52,11 @@ module BotManager
 
             endpoint = "/skills/#{skill_id}/betaTest/testers"
 
-            if !max_results.nil? || !max_results.empty?
+            if !max_results.nil? && !max_results.empty?
               endpoint += "&maxResults=#{max_results}"
             end
 
-            if !next_token.nil? || !next_token.empty?
+            if !next_token.nil? && !next_token.empty?
               endpoint += "&nextToken=#{next_token}"
             end
 

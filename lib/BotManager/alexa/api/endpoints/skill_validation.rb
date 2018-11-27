@@ -12,7 +12,7 @@ module BotManager
 
             endpoint = "/v1/skills/#{skill_id}/stages/#{stage}/validations"
 
-            if locales.nil? || locales.empty?
+            if locales.nil? && locales.empty?
               locales = ['en-US']
             end
 
