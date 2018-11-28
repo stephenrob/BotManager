@@ -50,10 +50,9 @@ module BotManager
 
             body = {
                 "vendorId": vendor_id,
-                "manifest": manifest
-            }
+            }.merge(manifest)
 
-            post(endpoint, {body: body})
+            post(endpoint, {body: body.to_json})
 
           end
 
@@ -61,7 +60,7 @@ module BotManager
 
             endpoint = "/v1/skills/#{skill_id}/stages/development/manifest"
 
-            put(endpoint, {body: manifest})
+            put(endpoint, {body: manifest.to_json})
 
           end
 

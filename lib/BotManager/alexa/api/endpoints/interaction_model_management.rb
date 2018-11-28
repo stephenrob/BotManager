@@ -20,7 +20,7 @@ module BotManager
 
             endpoint = "/v1/skills/#{skill_id}/stages/#{stage}/interactionModel/locales/#{locale}"
 
-            put(endpoint, {body: manifest})
+            put(endpoint, {body: manifest.to_json})
 
           end
 

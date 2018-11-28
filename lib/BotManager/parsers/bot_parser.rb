@@ -9,7 +9,7 @@ module BotManager
       attr_reader :bot
 
       def initialize file_path
-        @bot = JSON.parse(File.read(filepath), :symbolize_names => true)
+        @bot = JSON.parse(File.read(file_path), :symbolize_names => true)
       end
 
       def name

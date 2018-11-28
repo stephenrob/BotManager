@@ -32,6 +32,19 @@ module BotManager
 
         def to_h
 
+          if @endpoint.nil? || @endpoint.empty?
+            custom = {
+                interfaces: []
+            }
+          else
+            custom = {
+                endpoint: {
+                    uri: @endpoint
+                },
+                interfaces: []
+            }
+          end
+
           {
               manifest: {
                   publishingInformation: {
@@ -42,12 +55,7 @@ module BotManager
                       distributionCountries: @publishing_options.distribution_countries.to_a
                   },
                   apis: {
-                      custom: {
-                          endpoint: {
-                              uri: @endpoint
-                          },
-                          interfaces: []
-                      }
+                      custom: custom
                   },
                   manifestVersion: MANIFEST_VERSION,
                   privacyAndCompliance: @privacy_and_compliance.to_h

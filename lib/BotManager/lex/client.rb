@@ -1,3 +1,5 @@
+require 'aws-sdk-lexmodelbuildingservice'
+
 module BotManager
 
   module Lex

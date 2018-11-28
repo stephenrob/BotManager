@@ -21,7 +21,7 @@ module BotManager
         end
 
         def add_slot slot
-          @slot.add slot.to_h
+          @slots.add slot.to_h
         end
 
         def to_h

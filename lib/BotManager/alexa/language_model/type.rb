@@ -10,8 +10,8 @@ module BotManager
 
         attr_reader :name, :values
 
-        def initialize name, type
-          @values = Set.new
+        def initialize name
+          @values = []
           @name = name
         end
 
@@ -21,14 +21,14 @@ module BotManager
                   value: value
               }
           }
-          @values.add formatted_value
+          @values.append formatted_value
         end
 
         def to_h
 
           {
               name: @name,
-              values: @values.to_a
+              values: @values
           }
 
         end

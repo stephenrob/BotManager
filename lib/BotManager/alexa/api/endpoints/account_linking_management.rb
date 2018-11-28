@@ -20,7 +20,7 @@ module BotManager
 
             endpoint = "/v1/skills/#{skill_id}/stages/#{stage}/accountLinkingClient"
 
-            put(endpoint, {body: body})
+            put(endpoint, {body: body.to_json})
 
           end
 

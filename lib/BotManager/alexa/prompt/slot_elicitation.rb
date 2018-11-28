@@ -30,7 +30,7 @@ module BotManager
 
           {
               id: id,
-              variations: variations
+              variations: variations.to_a
           }
 
         end

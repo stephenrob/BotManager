@@ -32,8 +32,8 @@ module BotManager
 
           {
               interactionModel: {
-                  languageModel: @language_model,
-                  dialog: @dialog,
+                  languageModel: @language_model.to_h,
+                  dialog: @dialog.to_h,
                   prompts: @prompts.to_a
               }
           }
