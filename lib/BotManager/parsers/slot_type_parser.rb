@@ -1,4 +1,5 @@
 require 'json'
+require 'BotManager/parsers/template_file_parser'
 
 module BotManager
 
@@ -9,7 +10,8 @@ module BotManager
       attr_reader :slot_type
 
       def initialize file_path
-        @slot_type = JSON.parse(File.read(file_path), :symbolize_names => true)
+        file = TemplateFileParser.parse(file_path)
+        @slot_type = JSON.parse(file, :symbolize_names => true)
       end
 
       def name
