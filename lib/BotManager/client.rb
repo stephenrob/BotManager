@@ -26,6 +26,7 @@ module BotManager
       @slot_types = {}
       @intents = {}
       @bots = {}
+      @alexa_amazon_intents = ["AMAZON.FallbackIntent", "AMAZON.CancelIntent", "AMAZON.HelpIntent", "AMAZON.StopIntent"]
       @lex_manager = Lex::Manager.new
       @alexa_manager = Alexa::Manager.new alexa_config[:client_id], alexa_config[:client_secret], alexa_config[:refresh_token], alexa_config[:vendor_id]
     end
@@ -347,6 +348,14 @@ module BotManager
 
       end
 
+      @alexa_amazon_intents.each do |intent_name|
+
+        language_intent = BotManager::Alexa::LanguageModel::Intent.new intent_name
+
+        language_intents[intent_name] = language_intent
+
+      end
+
       @bots.each do |_key, bot|
 
         skill_id = @alexa_manager.get_skill_id_from_name generate_bot_full_name(bot.name)
@@ -396,12 +405,18 @@ module BotManager
 
         end
 
+        @alexa_amazon_intents.each do |intent_name|
+
+          language_intent = language_intents[intent_name]
+
+          language_model.register_intent language_intent
+
+        end
+
         interaction_model.add_dialog dialog_model
         interaction_model.add_language_model language_model
 
-        puts interaction_model.to_h.to_json
-
-        @alexa_manager.register_skill_interaction_model skill_id, interaction_model
+        @alexa_manager.register_skill_interaction_model skill_id, interaction_model, 'en-GB'
 
       end
 
