@@ -50,7 +50,9 @@ module BotManager
 
       @slot_types.each do |_key, slot_type|
 
-        lex_slot_type = Lex::SlotType.new slot_type.name, slot_type.description
+        slot_type_name = generate_lex_full_name slot_type.name
+
+        lex_slot_type = Lex::SlotType.new slot_type_name, slot_type.description
 
         slot_type.enumeration_values.each do |value|
           enumeration_value = Lex::EnumerationValue.new value[:name]
@@ -70,7 +72,9 @@ module BotManager
 
       @intents.each do |_key, intent|
 
-        lex_intent = Lex::Intent.new intent.name, intent.description
+        intent_name = generate_lex_full_name intent.name
+
+        lex_intent = Lex::Intent.new intent_name, intent.description
 
         intent.sample_uterrances.each do |utterance|
           lex_intent.add_sample_utterance utterance
@@ -96,7 +100,9 @@ module BotManager
         intent.slots.each do |slot|
           parsed_slot = Parsers::SlotParser.new slot
 
-          lex_intent_slot = Lex::IntentSlot.new parsed_slot.name, parsed_slot.description
+          intent_slot_name = generate_lex_full_name parsed_slot.name
+
+          lex_intent_slot = Lex::IntentSlot.new intent_slot_name, parsed_slot.description
 
           lex_intent_slot.slot_constraint = parsed_slot.constraint
           lex_intent_slot.slot_type = parsed_slot.type
@@ -128,10 +134,13 @@ module BotManager
 
       @bots.each do |_key, bot|
 
-        lex_bot = Lex::Bot.new bot.name, bot.description
+        bot_name = generate_lex_full_name bot.name
+
+        lex_bot = Lex::Bot.new bot_name, bot.description
 
         bot.intents do |intent|
-          lex_bot.register_intent intent[:intent_name], intent[:intent_version]
+          intent_name = generate_lex_full_name intent[:intent_name]
+          lex_bot.register_intent intent_name, intent[:intent_version]
         end
 
         lex_bot.idle_session_ttl_in_seconds = bot.lex[:idle_session_ttl_in_seconds]
@@ -433,6 +442,20 @@ module BotManager
       end
 
       "#{name} - #{skill_suffix}"
+
+    end
+
+    def generate_lex_full_name name
+
+      release_data = get_current_release_data
+
+      skill_suffix = release_data["skill_suffix"]
+
+      if skill_suffix.nil? || skill_suffix.empty?
+        return name
+      end
+
+      "#{name}#{skill_suffix}"
 
     end
 
