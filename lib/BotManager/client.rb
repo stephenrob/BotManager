@@ -217,7 +217,7 @@ module BotManager
 
       @bots.each do |_key, bot|
 
-        if bot.alexa["accountLinking"].nil? || bot.alexa["accountLinking"].empty?
+        if bot.alexa[:accountLinking].nil? || bot.alexa[:accountLinking].empty?
           puts 'Not linking account - no account linking data present'
           return
         end
@@ -230,26 +230,26 @@ module BotManager
           return
         end
 
-        account_linking_data = bot.alexa["accountLinking"]
+        account_linking_data = bot.alexa[:accountLinking]
 
         account_linking = BotManager::Alexa::Builders::AccountLinkingRequestBuilder.new
 
-        account_linking_data["domains"].each do |domain|
+        account_linking_data[:domains].each do |domain|
           account_linking.add_domain domain
         end
 
-        account_linking_data["scopes"].each do |scope|
+        account_linking_data[:scopes].each do |scope|
           account_linking.add_scope scope
         end
 
-        account_linking.skip_on_enablement = account_linking_data["skipOnEnablement"]
-        account_linking.type = account_linking_data["type"]
-        account_linking.authorization_url = account_linking_data["authorizationUrl"]
-        account_linking.client_id = account_linking_data["clientId"]
-        account_linking.client_secret = account_linking_data["clientSecret"]
-        account_linking.access_token_url = account_linking_data["accessTokenUrl"]
-        account_linking.access_token_scheme = account_linking_data["accessTokenScheme"]
-        account_linking.default_token_expiration_in_seconds = account_linking_data["defaultTokenExpirationInSeconds"]
+        account_linking.skip_on_enablement = account_linking_data[:skipOnEnablement]
+        account_linking.type = account_linking_data[:type]
+        account_linking.authorization_url = account_linking_data[:authorizationUrl]
+        account_linking.client_id = account_linking_data[:clientId]
+        account_linking.client_secret = account_linking_data[:clientSecret]
+        account_linking.access_token_url = account_linking_data[:accessTokenUrl]
+        account_linking.access_token_scheme = account_linking_data[:accessTokenScheme]
+        account_linking.default_token_expiration_in_seconds = account_linking_data[:defaultTokenExpirationInSeconds]
 
         @alexa_manager.register_skill_account_linking skill_id, account_linking
 
