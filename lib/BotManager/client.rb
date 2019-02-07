@@ -275,7 +275,7 @@ module BotManager
         type = BotManager::Alexa::LanguageModel::Type.new slot_type.name
 
         slot_type.enumeration_values.each do |enum|
-          type.add_value enum[:value]
+          type.add_value enum[:value], enum[:synonyms]
         end
 
         language_types[slot_type.name] = type

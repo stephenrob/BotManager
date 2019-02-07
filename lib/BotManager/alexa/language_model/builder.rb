@@ -21,7 +21,10 @@ module BotManager
         end
 
         def register_type type
-          @types.add type.to_h
+          registered_type = type.to_h
+          if !registered_type.nil? && !registered_type.empty?
+            @types.add type.to_h
+          end
         end
 
         def to_h
