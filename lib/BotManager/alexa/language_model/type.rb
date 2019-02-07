@@ -15,10 +15,11 @@ module BotManager
           @name = name
         end
 
-        def add_value value
+        def add_value value, synonyms
           formatted_value = {
               name: {
-                  value: value
+                  value: value,
+                  synonyms: synonyms
               }
           }
           @values.append formatted_value

@@ -10,7 +10,7 @@ module BotManager
 
           def create_beta_test skill_id, feedback_email
 
-            endpoint = "/skills/#{skill_id}/betaTest"
+            endpoint = "/v1/skills/#{skill_id}/betaTest"
 
             post(endpoint, {body:{"feedbackEmail": feedback_email}})
 
@@ -18,7 +18,7 @@ module BotManager
 
           def get_beta_test skill_id
 
-            endpoint = "/skills/#{skill_id}/betaTest"
+            endpoint = "/v1/skills/#{skill_id}/betaTest"
 
             get(endpoint)
 
@@ -26,7 +26,7 @@ module BotManager
 
           def update_beta_test skill_id, feedback_email
 
-            endpoint = "/skills/#{skill_id}/betaTest"
+            endpoint = "/v1/skills/#{skill_id}/betaTest"
 
             put(endpoint, {body:{"feedbackEmail": feedback_email}})
 
@@ -34,7 +34,7 @@ module BotManager
 
           def start_beta_test skill_id
 
-            endpoint = "/skills/#{skill_id}/betaTest/start"
+            endpoint = "/v1/skills/#{skill_id}/betaTest/start"
 
             post(endpoint)
 
@@ -42,7 +42,7 @@ module BotManager
 
           def end_beta_test skill_id
 
-            endpoint = "/skills/#{skill_id}/betaTest/end"
+            endpoint = "/v1/skills/#{skill_id}/betaTest/end"
 
             post(endpoint)
 
@@ -50,7 +50,7 @@ module BotManager
 
           def get_beta_testers skill_id, max_results=nil, next_token=nil
 
-            endpoint = "/skills/#{skill_id}/betaTest/testers"
+            endpoint = "/v1/skills/#{skill_id}/betaTest/testers"
 
             if !max_results.nil? && !max_results.empty?
               endpoint += "&maxResults=#{max_results}"
@@ -66,7 +66,7 @@ module BotManager
 
           def add_beta_tester skill_id, email_id
 
-            endpoint = "/skills/#{skill_id}/betaTest/testers/add"
+            endpoint = "/v1/skills/#{skill_id}/betaTest/testers/add"
 
             body = {
                 "testers": [
@@ -82,7 +82,7 @@ module BotManager
 
           def add_beta_testers skill_id, email_ids=[]
 
-            endpoint = "/skills/#{skill_id}/betaTest/testers/add"
+            endpoint = "/v1/skills/#{skill_id}/betaTest/testers/add"
 
             testers = []
 
@@ -100,7 +100,7 @@ module BotManager
 
           def remove_beta_tester skill_id, email_id
 
-            endpoint = "/skills/#{skill_id}/betaTest/testers/remove"
+            endpoint = "/v1/skills/#{skill_id}/betaTest/testers/remove"
 
             body = {
                 "testers": [
@@ -116,7 +116,7 @@ module BotManager
 
           def remove_beta_testers skill_id, email_ids=[]
 
-            endpoint = "/skills/#{skill_id}/betaTest/testers/remove"
+            endpoint = "/v1/skills/#{skill_id}/betaTest/testers/remove"
 
             testers = []
 
@@ -134,7 +134,7 @@ module BotManager
 
           def send_reminder_to_tester skill_id, email_id
 
-            endpoint = "/skills/#{skill_id}/betaTest/testers/sendReminder"
+            endpoint = "/v1/skills/#{skill_id}/betaTest/testers/sendReminder"
 
             body = {
                 "testers": [
@@ -150,7 +150,7 @@ module BotManager
 
           def send_reminder_to_testers skill_id, email_ids=[]
 
-            endpoint = "/skills/#{skill_id}/betaTest/testers/sendReminder"
+            endpoint = "/v1/skills/#{skill_id}/betaTest/testers/sendReminder"
 
             testers = []
 
@@ -168,7 +168,7 @@ module BotManager
 
           def request_feedback_from_tester skill_id, email_id
 
-            endpoint = "/skills/#{skill_id}/betaTest/testers/requestFeedback"
+            endpoint = "/v1/skills/#{skill_id}/betaTest/testers/requestFeedback"
 
             body = {
                 "testers": [
@@ -184,7 +184,7 @@ module BotManager
 
           def request_feedback_from_testers skill_id, email_ids=[]
 
-            endpoint = "/skills/#{skill_id}/betaTest/testers/requestFeedback"
+            endpoint = "/v1/skills/#{skill_id}/betaTest/testers/requestFeedback"
 
             testers = []
 

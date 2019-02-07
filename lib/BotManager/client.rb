@@ -217,7 +217,7 @@ module BotManager
 
       @bots.each do |_key, bot|
 
-        if bot.alexa["accountLinking"].nil? || bot.alexa["accountLinking"].empty?
+        if bot.alexa[:accountLinking].nil? || bot.alexa[:accountLinking].empty?
           puts 'Not linking account - no account linking data present'
           return
         end
@@ -230,26 +230,26 @@ module BotManager
           return
         end
 
-        account_linking_data = bot.alexa["accountLinking"]
+        account_linking_data = bot.alexa[:accountLinking]
 
         account_linking = BotManager::Alexa::Builders::AccountLinkingRequestBuilder.new
 
-        account_linking_data["domains"].each do |domain|
+        account_linking_data[:domains].each do |domain|
           account_linking.add_domain domain
         end
 
-        account_linking_data["scopes"].each do |scope|
+        account_linking_data[:scopes].each do |scope|
           account_linking.add_scope scope
         end
 
-        account_linking.skip_on_enablement = account_linking_data["skipOnEnablement"]
-        account_linking.type = account_linking_data["type"]
-        account_linking.authorization_url = account_linking_data["authorizationUrl"]
-        account_linking.client_id = account_linking_data["clientId"]
-        account_linking.client_secret = account_linking_data["clientSecret"]
-        account_linking.access_token_url = account_linking_data["accessTokenUrl"]
-        account_linking.access_token_scheme = account_linking_data["accessTokenScheme"]
-        account_linking.default_token_expiration_in_seconds = account_linking_data["defaultTokenExpirationInSeconds"]
+        account_linking.skip_on_enablement = account_linking_data[:skipOnEnablement]
+        account_linking.type = account_linking_data[:type]
+        account_linking.authorization_url = account_linking_data[:authorizationUrl]
+        account_linking.client_id = account_linking_data[:clientId]
+        account_linking.client_secret = account_linking_data[:clientSecret]
+        account_linking.access_token_url = account_linking_data[:accessTokenUrl]
+        account_linking.access_token_scheme = account_linking_data[:accessTokenScheme]
+        account_linking.default_token_expiration_in_seconds = account_linking_data[:defaultTokenExpirationInSeconds]
 
         @alexa_manager.register_skill_account_linking skill_id, account_linking
 
@@ -275,7 +275,7 @@ module BotManager
         type = BotManager::Alexa::LanguageModel::Type.new slot_type.name
 
         slot_type.enumeration_values.each do |enum|
-          type.add_value enum[:value]
+          type.add_value enum[:value], enum[:synonyms]
         end
 
         language_types[slot_type.name] = type
@@ -303,7 +303,7 @@ module BotManager
             if language_slots.keys.include?(slot.name) && dialog_slots.keys.include?(slot.name)
               dialog_intent.add_slot dialog_slots[slot.name]
               language_intent.add_slot language_slots[slot.name]
-              return
+              next
             end
 
             dialog_slot = BotManager::Alexa::Dialog::Slot.new slot.name, slot.type, slot.alexa[:confirmation_required], slot.alexa[:elicitation_required]
@@ -372,7 +372,7 @@ module BotManager
         if skill_id.nil? || skill_id.empty?
           puts 'No skill for bot name'
           puts 'Not linking account as bot does not exist'
-          return
+          next
         end
 
         interaction_model = BotManager::Alexa::Builders::InteractionModelBuilder.new

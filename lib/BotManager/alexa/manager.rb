@@ -109,6 +109,8 @@ module BotManager
           add_skill_lambda_permission endpoint, skill_id
         end
 
+        sleep(20)
+
         update_skill skill_id, privacy_and_compliance, locale, publishing_options, endpoint
 
       end

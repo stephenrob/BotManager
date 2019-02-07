@@ -10,8 +10,12 @@ module BotManager
 
         template_file = File.read(file_path)
 
-        file = template_file.sub('${ACCOUNT_ID}', BotManager::TemplateConfig.account_id)
-        file = file.sub('${DEPLOY_ENV}', BotManager::TemplateConfig.deploy_env)
+        file = template_file.gsub('${ACCOUNT_ID}', BotManager::TemplateConfig.account_id)
+        file = file.gsub('${DEPLOY_ENV}', BotManager::TemplateConfig.deploy_env)
+        file = file.gsub('${ACCOUNT_LINKING_AUTHORIZATION_URL}', BotManager::TemplateConfig.account_linking_authorization_url)
+        file = file.gsub('${ACCOUNT_LINKING_CLIENT_ID}', BotManager::TemplateConfig.account_linking_client_id)
+        file = file.gsub('${ACCOUNT_LINKING_CLIENT_SECRET}', BotManager::TemplateConfig.account_linking_client_secret)
+        file = file.gsub('${ACCOUNT_LINKING_ACCESS_TOKEN_URL}', BotManager::TemplateConfig.account_linking_access_token_url)
 
         file
 

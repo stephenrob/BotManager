@@ -17,7 +17,8 @@ module BotManager
                       isAvailableWorldwide: @publishing_options.is_available_worldwide,
                       testingInstructions: @publishing_options.testing_instructions,
                       category: @publishing_options.category,
-                      distributionCountries: @publishing_options.distribution_countries.to_a
+                      distributionCountries: @publishing_options.distribution_countries.to_a,
+                      distributionMode: @publishing_options.distribution_mode
                   },
                   apis: {
                       custom: {

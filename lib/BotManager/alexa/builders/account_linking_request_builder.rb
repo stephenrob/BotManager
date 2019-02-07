@@ -41,7 +41,7 @@ module BotManager
                   clientId: self.client_id,
                   clientSecret: self.client_secret,
                   scopes: self.scopes.to_a,
-                  accessTokenUrl: self.access_token_scheme,
+                  accessTokenUrl: self.access_token_url,
                   accessTokenScheme: self.access_token_scheme,
                   defaultTokenExpirationInSeconds: self.default_token_expiration_in_seconds
               }
