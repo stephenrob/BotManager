@@ -9,7 +9,7 @@ module BotManager
       class PublishingOptions
 
         attr_reader :distribution_countries
-        attr_accessor :is_available_worldwide, :testing_instructions, :category
+        attr_accessor :is_available_worldwide, :testing_instructions, :category, :distribution_mode
 
         def initialize
           @distribution_countries = Set.new
