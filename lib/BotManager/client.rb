@@ -303,7 +303,7 @@ module BotManager
             if language_slots.keys.include?(slot.name) && dialog_slots.keys.include?(slot.name)
               dialog_intent.add_slot dialog_slots[slot.name]
               language_intent.add_slot language_slots[slot.name]
-              return
+              next
             end
 
             dialog_slot = BotManager::Alexa::Dialog::Slot.new slot.name, slot.type, slot.alexa[:confirmation_required], slot.alexa[:elicitation_required]
@@ -372,7 +372,7 @@ module BotManager
         if skill_id.nil? || skill_id.empty?
           puts 'No skill for bot name'
           puts 'Not linking account as bot does not exist'
-          return
+          next
         end
 
         interaction_model = BotManager::Alexa::Builders::InteractionModelBuilder.new

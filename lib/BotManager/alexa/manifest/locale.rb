@@ -31,7 +31,7 @@ module BotManager
 
           {
               summary: @summary,
-              examplePhrases: @example_phrases.to_a,
+              examplePhrases: @phrases.to_a,
               keywords: @keywords.to_a,
               smallIconUri: @small_icon_uri,
               largeIconUri: @large_icon_uri,
