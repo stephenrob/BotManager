@@ -31,7 +31,7 @@ module BotManager
       end
 
       def get_bot_checksum name, version
-        params = {name: name, version: version}
+        params = {name: name, version_or_alias: version}
         begin
           bot = @lex.get_bot params
           bot["checksum"]
