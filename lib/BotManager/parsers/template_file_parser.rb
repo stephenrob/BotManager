@@ -16,6 +16,7 @@ module BotManager
         file = file.gsub('${ACCOUNT_LINKING_CLIENT_ID}', BotManager::TemplateConfig.account_linking_client_id)
         file = file.gsub('${ACCOUNT_LINKING_CLIENT_SECRET}', BotManager::TemplateConfig.account_linking_client_secret)
         file = file.gsub('${ACCOUNT_LINKING_ACCESS_TOKEN_URL}', BotManager::TemplateConfig.account_linking_access_token_url)
+        file = file.gsub('${QNA_ID}', BotManager::TemplateConfig.qna_id)
 
         file
 
