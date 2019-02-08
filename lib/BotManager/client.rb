@@ -80,7 +80,7 @@ module BotManager
 
         lex_intent = Lex::Intent.new intent_name, intent.description
 
-        intent.sample_uterrances.each do |utterance|
+        intent.sample_utterances.each do |utterance|
           lex_intent.add_sample_utterance utterance
         end
 
@@ -247,6 +247,7 @@ module BotManager
         publishing_options.is_available_worldwide = bot.alexa[:isAvailableWorldwide]
         publishing_options.testing_instructions = bot.alexa[:testingInstructions]
         publishing_options.category = bot.alexa[:category]
+        publishing_options.distribution_mode = bot.alexa[:distributionMode]
 
         endpoint = bot.alexa[:endpoint]
 
