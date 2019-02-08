@@ -4,6 +4,7 @@ require 'BotManager/lex/manager'
 require 'BotManager/lex/slot_type'
 require 'BotManager/lex/bot'
 require 'BotManager/lex/intent'
+require 'BotManager/lex/built_in_intent'
 require 'BotManager/lex/intent_slot'
 require 'BotManager/lex/code_hook_fulfillment_activity'
 require 'BotManager/lex/abort_statement'
@@ -26,7 +27,8 @@ module BotManager
       @slot_types = {}
       @intents = {}
       @bots = {}
-      @alexa_amazon_intents = ["AMAZON.FallbackIntent", "AMAZON.CancelIntent", "AMAZON.HelpIntent", "AMAZON.StopIntent"]
+      @alexa_amazon_intents = ["AMAZON.FallbackIntent", "AMAZON.CancelIntent", "AMAZON.HelpIntent", "AMAZON.StopIntent", "AMAZON.YesIntent", "AMAZON.NoIntent"]
+      @lex_valid_amazon_intents = ["AMAZON.HelpIntent"]
       @lex_manager = Lex::Manager.new
       @alexa_manager = Alexa::Manager.new alexa_config[:client_id], alexa_config[:client_secret], alexa_config[:refresh_token], alexa_config[:vendor_id]
     end
@@ -55,9 +57,11 @@ module BotManager
         lex_slot_type = Lex::SlotType.new slot_type_name, slot_type.description
 
         slot_type.enumeration_values.each do |value|
-          enumeration_value = Lex::EnumerationValue.new value[:name]
-          value[:synonyms].each do |synonym|
-            enumeration_value.add_synonym synonym
+          enumeration_value = Lex::EnumerationValue.new value[:value]
+          if !value[:synonyms].nil?
+            value[:synonyms].each do |synonym|
+              enumeration_value.add_synonym synonym
+            end
           end
           lex_slot_type.add_enumeration_value enumeration_value
         end
@@ -89,7 +93,7 @@ module BotManager
 
         conclusion_statement = intent.lex[:conclusion_statement]
 
-        if !conclusion_statement.nil? || !conclusion_statement.empty?
+        if !conclusion_statement.nil? && !conclusion_statement.empty?
           lex_conclusion_statement = Lex::ConclusionStatement.new
           conclusion_statement[:messages].each do |message|
             lex_conclusion_statement.add_message message[:content_type], message[:content]
@@ -97,31 +101,41 @@ module BotManager
           lex_intent.set_conclusion_statement lex_conclusion_statement
         end
 
-        intent.slots.each do |slot|
-          parsed_slot = Parsers::SlotParser.new slot
+        if intent.slots.nil? || intent.slots.empty?
+          puts "No slots to load for intent"
+        else
+          intent.slots.each do |slot|
+            parsed_slot = Parsers::SlotParser.new slot
 
-          intent_slot_name = generate_lex_full_name parsed_slot.name
+            if parsed_slot.type.start_with?('AMAZON')
+              intent_slot_type = parsed_slot.type
+            else
+              intent_slot_type = generate_lex_full_name parsed_slot.type
+            end
 
-          lex_intent_slot = Lex::IntentSlot.new intent_slot_name, parsed_slot.description
+            intent_slot_name = parsed_slot.name
 
-          lex_intent_slot.slot_constraint = parsed_slot.constraint
-          lex_intent_slot.slot_type = parsed_slot.type
-          lex_intent_slot.slot_type_version = parsed_slot[:lex][:type_version]
+            lex_intent_slot = Lex::IntentSlot.new intent_slot_name, parsed_slot.description
 
-          parsed_slot.sample_utterances.each do |utterance|
-            lex_intent_slot.add_utterance utterance
+            lex_intent_slot.slot_constraint = parsed_slot.constraint
+            lex_intent_slot.slot_type = intent_slot_type
+            lex_intent_slot.slot_type_version = parsed_slot.lex[:type_version]
+
+            parsed_slot.sample_utterances.each do |utterance|
+              lex_intent_slot.add_utterance utterance
+            end
+
+            elicitation_prompt = parsed_slot.elicitation_prompt
+            lex_value_elicitation_prompt = Lex::ValueElicitationPrompt.new elicitation_prompt[:max_attempts]
+            elicitation_prompt[:messages].each do |message|
+              lex_value_elicitation_prompt.add_message message[:content_type], message[:content]
+            end
+
+            lex_intent_slot.set_value_elicitation_prompt lex_value_elicitation_prompt
+
+            lex_intent.register_slot lex_intent_slot
+
           end
-
-          elicitation_prompt = parsed_slot.elicitation_prompt
-          lex_value_elicitation_prompt = Lex::ValueElicitationPrompt.new elicitation_prompt[:max_attempts]
-          elicitation_prompt[:messages].each do |message|
-            lex_value_elicitation_prompt.add_message message[:content_type], message[:content]
-          end
-
-          lex_intent_slot.set_value_elicitation_prompt lex_value_elicitation_prompt
-
-          lex_intent.register_slot lex_intent_slot
-
         end
 
         @lex_manager.register_intent lex_intent
@@ -138,15 +152,38 @@ module BotManager
 
         lex_bot = Lex::Bot.new bot_name, bot.description
 
-        bot.intents do |intent|
+        bot.intents.each do |intent|
           intent_name = generate_lex_full_name intent[:intent_name]
           lex_bot.register_intent intent_name, intent[:intent_version]
         end
 
+        bot.lex[:builtin_intents].each do |builtin_intent|
+
+          next unless @lex_valid_amazon_intents.include? builtin_intent[:type]
+
+          intent_name = generate_lex_full_name builtin_intent[:name]
+
+          lex_intent = Lex::BuiltInIntent.new builtin_intent[:type], intent_name
+
+          fulfillment_activity = builtin_intent[:fulfillment_activity]
+
+          if !fulfillment_activity.nil? && !fulfillment_activity.empty?
+            lex_fulfillment_activity = Lex::CodeHookFulfillmentActivity.new fulfillment_activity[:uri]
+            lex_intent.set_fulfillment_activity lex_fulfillment_activity
+          end
+
+          @lex_manager.register_intent lex_intent
+
+          lex_bot.register_intent intent_name, builtin_intent[:version]
+
+        end
+
+        sleep 5
+
         lex_bot.idle_session_ttl_in_seconds = bot.lex[:idle_session_ttl_in_seconds]
         lex_bot.voice_id = bot.lex[:voice_id]
         lex_bot.locale = bot.lex[:locale]
-        lex_bot.child_directed = bot.privacy_and_compliance[:is_child_directed]
+        lex_bot.child_directed = bot.privacy_and_compliance[:isChildDirected]
 
         abort_statement = bot.lex[:abort_statement]
         clarification_statement = bot.lex[:clarification_statement]
@@ -194,6 +231,14 @@ module BotManager
         locale.small_icon_uri = bot.alexa[:smallIconUri]
         locale.large_icon_uri = bot.alexa[:largeIconUri]
         locale.summary = bot.alexa[:summary]
+
+        bot.alexa[:examplePhrases].each do |phrase|
+          locale.add_example_phrase phrase
+        end
+
+        bot.alexa[:keywords].each do |keyword|
+          locale.add_keyword keyword
+        end
 
         privacy_and_compliance.add_locale locale
 
@@ -447,15 +492,17 @@ module BotManager
 
     def generate_lex_full_name name
 
+      formatted_name = name.gsub(/\s+/, '')
+
       release_data = get_current_release_data
 
       skill_suffix = release_data["skill_suffix"]
 
       if skill_suffix.nil? || skill_suffix.empty?
-        return name
+        return formatted_name
       end
 
-      "#{name}#{skill_suffix}"
+      "#{formatted_name}#{skill_suffix}".gsub(/\s+/, '')
 
     end
 
