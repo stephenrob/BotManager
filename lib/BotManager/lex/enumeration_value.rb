@@ -20,8 +20,8 @@ module BotManager
       def to_h
 
         {
-            value: name,
-            synonyms: synonyms.to_a
+            value: @name,
+            synonyms: @synonyms.to_a
         }
 
       end
