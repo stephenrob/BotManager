@@ -80,7 +80,7 @@ module BotManager
 
         lex_intent = Lex::Intent.new intent_name, intent.description
 
-        intent.sample_uterrances.each do |utterance|
+        intent.sample_utterances.each do |utterance|
           lex_intent.add_sample_utterance utterance
         end
 
