@@ -247,6 +247,7 @@ module BotManager
         publishing_options.is_available_worldwide = bot.alexa[:isAvailableWorldwide]
         publishing_options.testing_instructions = bot.alexa[:testingInstructions]
         publishing_options.category = bot.alexa[:category]
+        publishing_options.distribution_mode = bot.alexa[:distributionMode]
 
         endpoint = bot.alexa[:endpoint]
 
