@@ -12,7 +12,7 @@ module BotManager
         @name = name
         @description = description
         @sample_utterances = Set.new
-        @slots = Set.new
+        @slots = []
       end
 
       def add_sample_utterance utterance
@@ -28,14 +28,14 @@ module BotManager
       end
 
       def register_slot slot
-        @slots.add slot.to_h
+        @slots.push slot.to_h
       end
 
       def to_h
         {
             name: @name,
             description: @description,
-            slots: @slots.to_a,
+            slots: @slots,
             sample_utterances: @sample_utterances,
             fulfillment_activity: @fulfillment_activity,
             conclusion_statement: @conclusion_statement
