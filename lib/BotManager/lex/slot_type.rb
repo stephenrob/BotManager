@@ -9,7 +9,7 @@ module BotManager
       attr_reader :name, :description, :enumeration_values
 
       def initialize name, description
-        @name = name,
+        @name = name
         @description = description
         @enumeration_values = Set.new
       end
@@ -20,9 +20,9 @@ module BotManager
 
       def to_h
         {
-            name: name,
-            description: description,
-            enumeration_values: enumeration_values.to_a
+            name: @name,
+            description: @description,
+            enumeration_values: @enumeration_values.to_a
         }
       end
 
