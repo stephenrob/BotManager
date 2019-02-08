@@ -1,5 +1,3 @@
-require 'set'
-
 module BotManager
 
   module Lex
@@ -12,7 +10,7 @@ module BotManager
       def initialize name, description
         @name = name
         @description = description
-        @intents = Set.new
+        @intents = []
         @child_directed = false
         @idle_session_ttl_in_seconds = 300
       end
@@ -22,7 +20,7 @@ module BotManager
             intent_name: name,
             intent_version: version
         }
-        @intents.add intent
+        @intents.push intent
       end
 
       def set_clarification_prompt clarification_prompt
@@ -38,7 +36,7 @@ module BotManager
         {
             name: @name,
             description: @description,
-            intents: @intents.to_a,
+            intents: @intents,
             clarification_prompt: @clarification_prompt,
             abort_statement: @abort_statement,
             idle_session_ttl_in_seconds: @idle_session_ttl_in_seconds,
