@@ -25,15 +25,20 @@ module BotManager
 
       def to_h
 
-        {
+        hash = {
             name: @name,
             description: @description,
             slot_constraint: @slot_constraint,
             slot_type: @slot_type,
-            slot_type_version: @slot_type_version,
-            value_elicitation_prompt: @value_elicitation_prompt,
+            value_elicitation_prompt: @value_elicitation_prompt.to_h,
             sample_utterances: @sample_utterances.to_a
         }
+
+        if !@slot_type.start_with?('AMAZON')
+          hash.merge!({slot_type_version: @slot_type_version})
+        end
+
+        hash
 
       end
 
