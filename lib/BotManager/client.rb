@@ -48,6 +48,18 @@ module BotManager
       @bots[parsed_bot.name] = parsed_bot
     end
 
+    def register_lex_bots
+      register_slot_types_with_lex
+      register_intents_with_lex
+      register_bots_with_lex
+    end
+
+    def register_alexa_bots
+      register_bots_with_alexa
+      register_account_linking_with_alexa
+      register_interaction_model_with_alexa
+    end
+
     def register_slot_types_with_lex
 
       @slot_types.each do |_key, slot_type|
