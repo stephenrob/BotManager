@@ -82,6 +82,14 @@ module BotManager
 
       end
 
+      def update_bot_alias bot_name, version, bot_alias
+
+        puts "Updating bot alias #{bot_alias} for bot: #{bot_name}"
+
+        alias_checksum = @lex_client.get_bot_alias_checksum bot_name, bot_alias
+
+        @lex_client.put_bot_alias bot_name, version, bot_alias, alias_checksum
+
       end
 
     end
