@@ -50,6 +50,16 @@ module BotManager
         end
       end
 
+      def get_bot_aliases bot_name
+        params = {bot_name: bot_name}
+        begin
+          bot_aliases_response = @lex.get_bot_aliases params
+          bot_aliases_response["BotAliases"]
+        rescue Aws::LexModelBuildingService::Errors::ServiceError => e
+          []
+        end
+      end
+
       def create_slot_type_version name, checksum
         params = {name: name, checksum: checksum}
         begin
