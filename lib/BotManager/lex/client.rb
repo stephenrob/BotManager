@@ -64,6 +64,17 @@ module BotManager
         end
       end
 
+      def get_bot_build_status bot_name, version_or_alias
+        params = {name: bot_name, version_or_alias: version_or_alias}
+        begin
+          bot = @lex.get_bot params
+          bot["status"]
+        rescue Aws::LexModelBuildingService::Errors::NotFoundException => e
+          puts e
+          nil
+        end
+      end
+
     end
 
   end
