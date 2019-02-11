@@ -20,7 +20,9 @@ module BotManager
 
         definition[:checksum] = slot_type_checksum
 
-        @lex_client.put_slot_type definition
+        put_response = @lex_client.put_slot_type definition
+
+        @lex_client.create_slot_type_version slot_type.name, put_response["checksum"]
 
       end
 
@@ -34,7 +36,9 @@ module BotManager
 
         definition[:checksum] = intent_checksum
 
-        @lex_client.put_intent definition
+        put_response = @lex_client.put_intent definition
+
+        @lex_client.create_intent_version intent.name, put_response["checksum"]
 
       end
 
@@ -48,7 +52,35 @@ module BotManager
 
         definition[:checksum] = bot_checksum
 
-        @lex_client.put_bot definition
+        put_response = @lex_client.put_bot definition
+
+        version = @lex_client.create_bot_version bot.name, put_response["checksum"]
+
+        bot_build_status = "NOT_BUILT"
+        i = 0
+
+        while ["BUILDING", "NOT_BUILT"].include?(bot_build_status)
+
+          puts "Waiting for bot: #{bot.name} to be built"
+
+          bot_build_status = @lex_client.get_bot_build_status bot.name, version
+
+          sleep(2.pow(i))
+
+          i += 1
+
+          if i > 8
+            puts "Exceeded max wait"
+            return version
+          end
+
+        end
+
+        puts "Finished building bot: #{bot.name}"
+
+        version
+
+      end
 
       end
 
