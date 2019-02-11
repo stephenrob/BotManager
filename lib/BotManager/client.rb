@@ -55,6 +55,7 @@ module BotManager
       register_slot_types_with_lex
       register_intents_with_lex
       register_bots_with_lex
+      alias_lex_bots
     end
 
     def register_alexa_bots
@@ -225,6 +226,21 @@ module BotManager
         version = @lex_manager.register_bot lex_bot
         @bot_versions[bot_name] = version
 
+      end
+
+    end
+
+    def alias_lex_bots
+
+      @bots.each do |_key, bot|
+
+        bot_name = generate_lex_full_name bot.name
+
+        bot_version = @bot_versions[bot_name]
+
+        bot_alias = "LIVE"
+
+        @lex_manager.update_bot_alias bot_name, bot_version, bot_alias
 
       end
 
