@@ -40,6 +40,16 @@ module BotManager
         end
       end
 
+      def get_bot_alias_checksum bot_name, alias_name
+        params = {bot_name: bot_name, name: alias_name}
+        begin
+          bot_alias = @lex.get_bot_alias params
+          bot_alias["checksum"]
+        rescue Aws::LexModelBuildingService::Errors::NotFoundException => e
+          nil
+        end
+      end
+
       def put_slot_type slot_type_definition
         begin
           @lex.put_slot_type slot_type_definition
