@@ -25,8 +25,11 @@ module BotManager
       @release = release
       @releases = JSON.parse(File.read(release_file))
       @slot_types = {}
+      @slot_type_versions = {}
       @intents = {}
+      @intent_versions = {}
       @bots = {}
+      @bot_versions = {}
       @alexa_amazon_intents = ["AMAZON.FallbackIntent", "AMAZON.CancelIntent", "AMAZON.HelpIntent", "AMAZON.StopIntent", "AMAZON.YesIntent", "AMAZON.NoIntent"]
       @lex_valid_amazon_intents = ["AMAZON.HelpIntent"]
       @lex_manager = Lex::Manager.new
@@ -78,7 +81,9 @@ module BotManager
           lex_slot_type.add_enumeration_value enumeration_value
         end
 
-        @lex_manager.register_slot_type lex_slot_type
+        version = @lex_manager.register_slot_type lex_slot_type
+
+        @slot_type_versions[slot_type_name] = version
 
       end
 
@@ -131,7 +136,7 @@ module BotManager
 
             lex_intent_slot.slot_constraint = parsed_slot.constraint
             lex_intent_slot.slot_type = intent_slot_type
-            lex_intent_slot.slot_type_version = parsed_slot.lex[:type_version]
+            lex_intent_slot.slot_type_version = @slot_type_versions[intent_slot_type]
 
             parsed_slot.sample_utterances.each do |utterance|
               lex_intent_slot.add_utterance utterance
@@ -150,7 +155,8 @@ module BotManager
           end
         end
 
-        @lex_manager.register_intent lex_intent
+        version = @lex_manager.register_intent lex_intent
+        @intent_versions[intent_name] = version
 
       end
 
@@ -166,7 +172,7 @@ module BotManager
 
         bot.intents.each do |intent|
           intent_name = generate_lex_full_name intent[:intent_name]
-          lex_bot.register_intent intent_name, intent[:intent_version]
+          lex_bot.register_intent intent_name, @intent_versions[intent_name]
         end
 
         bot.lex[:builtin_intents].each do |builtin_intent|
@@ -184,9 +190,9 @@ module BotManager
             lex_intent.set_fulfillment_activity lex_fulfillment_activity
           end
 
-          @lex_manager.register_intent lex_intent
+          version = @lex_manager.register_intent lex_intent
 
-          lex_bot.register_intent intent_name, builtin_intent[:version]
+          lex_bot.register_intent intent_name, version
 
         end
 
@@ -216,7 +222,9 @@ module BotManager
           lex_bot.set_clarification_prompt lex_clarification_statement
         end
 
-        @lex_manager.register_bot lex_bot
+        version = @lex_manager.register_bot lex_bot
+        @bot_versions[bot_name] = version
+
 
       end
 
