@@ -60,6 +60,36 @@ module BotManager
         end
       end
 
+      def get_slot_type_versions name
+        params = {name: name, max_results: 50}
+        begin
+          slot_types_response = @lex.get_slot_type_versions params
+          slot_types_response["slot_types"]
+        rescue Aws::LexModelBuildingService::Errors::ServiceError => e
+          []
+        end
+      end
+
+      def get_intent_versions name
+        params = {name: name, max_results: 50}
+        begin
+          intents_response = @lex.get_intent_versions params
+          intents_response["intents"]
+        rescue Aws::LexModelBuildingService::Errors::ServiceError => e
+          []
+        end
+      end
+
+      def get_bot_versions name
+        params = {name: name, max_results: 50}
+        begin
+          bots_response = @lex.get_bot_versions params
+          bots_response["bots"]
+        rescue Aws::LexModelBuildingService::Errors::ServiceError => e
+          []
+        end
+      end
+
       def create_slot_type_version name, checksum
         params = {name: name, checksum: checksum}
         begin
