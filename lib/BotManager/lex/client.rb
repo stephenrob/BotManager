@@ -79,6 +79,18 @@ module BotManager
           nil
         end
       end
+
+      def put_bot_alias bot_name, bot_version, alias_name, version_checksum
+        params = {bot_name: bot_name, bot_version: bot_version, name: alias_name, checksum: version_checksum}
+        begin
+          bot_alias = @lex.put_bot_alias params
+          bot_alias["name"]
+        rescue Aws::LexModelBuildingService::Errors::ServiceError => e
+          puts e
+          nil
+        end
+      end
+
       def put_slot_type slot_type_definition
         begin
           @lex.put_slot_type slot_type_definition
