@@ -56,6 +56,8 @@ module BotManager
       register_intents_with_lex
       register_bots_with_lex
       alias_lex_bots
+      sleep(5)
+      cleanup_lex_versions
     end
 
     def register_alexa_bots
@@ -243,6 +245,46 @@ module BotManager
         @lex_manager.update_bot_alias bot_name, bot_version, bot_alias
 
       end
+
+    end
+
+    def cleanup_lex_versions
+
+      max_versions_to_keep = 5
+
+      puts "Cleaning up lex versions"
+
+      @bots.each do |_key, bot|
+
+        bot_name = generate_lex_full_name bot.name
+
+        puts "Cleaning up versions on bot: #{bot_name}"
+
+        @lex_manager.cleanup_bot_versions bot_name, max_versions_to_keep, ["$LATEST", @bot_versions[bot_name]]
+
+      end
+
+      @intents.each do |_key, intent|
+
+        intent_name = generate_lex_full_name intent.name
+
+        puts "Cleaning up versions on intent: #{intent_name}"
+
+        @lex_manager.cleanup_intent_versions intent_name, max_versions_to_keep, ["$LATEST", @intent_versions[intent_name]]
+
+      end
+
+      @slot_types.each do |_key, slot_type|
+
+        slot_type_name = generate_lex_full_name slot_type.name
+
+        puts "Cleaning up versions on slot type: #{slot_type_name}"
+
+        @lex_manager.cleanup_slot_type_versions slot_type_name, max_versions_to_keep, ["$LATEST", @slot_type_versions[slot_type_name]]
+
+      end
+
+      puts "Finished cleaning up lex versions"
 
     end
 
