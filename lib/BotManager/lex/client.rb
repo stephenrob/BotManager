@@ -166,6 +166,36 @@ module BotManager
         end
       end
 
+      def delete_slot_type_version name, version
+        params = {name: name, version: version}
+        begin
+          @lex.delete_slot_type_version params
+        rescue Aws::LexModelBuildingService::Errors::NotFoundException => e
+          puts e
+          nil
+        end
+      end
+
+      def delete_intent_version name, version
+        params = {name: name, version: version}
+        begin
+          @lex.delete_intent_version params
+        rescue Aws::LexModelBuildingService::Errors::NotFoundException => e
+          puts e
+          nil
+        end
+      end
+
+      def delete_bot_version name, version
+        params = {name: name, version: version}
+        begin
+          @lex.delete_bot_version params
+        rescue Aws::LexModelBuildingService::Errors::NotFoundException => e
+          puts e
+          nil
+        end
+      end
+
       def delete_bot_alias bot_name, alias_name
         params = {bot_name: bot_name, alias: alias_name}
         begin
