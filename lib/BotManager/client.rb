@@ -238,7 +238,7 @@ module BotManager
 
         bot_version = @bot_versions[bot_name]
 
-        bot_alias = "LIVE"
+        bot_alias = get_current_release_data["alias"]
 
         @lex_manager.update_bot_alias bot_name, bot_version, bot_alias
 
@@ -545,6 +545,10 @@ module BotManager
 
     def get_current_release_data
       @releases[@release]
+    end
+
+    def get_lex_bot_versions
+      @bot_versions
     end
 
   end
