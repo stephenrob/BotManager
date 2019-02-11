@@ -92,6 +92,90 @@ module BotManager
 
       end
 
+      def cleanup_slot_type_versions slot_type_name, max_to_keep, versions_to_ignore
+
+        versions = @lex_client.get_slot_type_versions slot_type_name
+
+        versions = versions.keep_if { |v| !versions_to_ignore.include? v[:version] }
+
+        if versions.length > max_to_keep
+
+          versions.sort! {|a,b| a[:last_updated_date] <=> b[:last_updated_date]}
+
+          versions_to_delete = versions[0...-max_to_keep]
+
+          versions_to_delete.each do |version|
+
+            version_id = version[:version]
+
+            puts "Removing version #{version_id} from slot type #{slot_type_name}"
+
+            @lex_client.delete_slot_type_version slot_type_name, version_id
+
+            sleep(3)
+
+          end
+
+        end
+
+      end
+
+      def cleanup_intent_versions intent_name, max_to_keep, versions_to_ignore
+
+        versions = @lex_client.get_intent_versions intent_name
+
+        versions = versions.keep_if { |v| !versions_to_ignore.include? v[:version] }
+
+        if versions.length > max_to_keep
+
+          versions.sort! {|a,b| a[:last_updated_date] <=> b[:last_updated_date]}
+
+          versions_to_delete = versions[0...-max_to_keep]
+
+          versions_to_delete.each do |version|
+
+            version_id = version[:version]
+
+            puts "Removing version #{version_id} from intent #{intent_name}"
+
+            @lex_client.delete_intent_version intent_name, version_id
+
+            sleep(3)
+
+          end
+
+        end
+
+      end
+
+      def cleanup_bot_versions bot_name, max_to_keep, versions_to_ignore
+
+        versions = @lex_client.get_bot_versions bot_name
+
+        versions = versions.keep_if { |v| !versions_to_ignore.include? v[:version] }
+
+        if versions.length > max_to_keep
+
+          versions.sort! {|a,b| a[:last_updated_date] <=> b[:last_updated_date]}
+
+          versions_to_delete = versions[0...-max_to_keep]
+
+          versions_to_delete.each do |version|
+
+            version_id = version[:version]
+
+            puts "Removing version #{version_id} from bot #{bot_name}"
+
+            @lex_client.delete_bot_version bot_name, version_id
+
+            sleep(3)
+
+          end
+
+        end
+
+      end
+
     end
 
   end
