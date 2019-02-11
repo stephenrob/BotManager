@@ -50,6 +50,35 @@ module BotManager
         end
       end
 
+      def create_slot_type_version name, checksum
+        params = {name: name, checksum: checksum}
+        begin
+          slot_type = @lex.create_slot_type_version params
+          slot_type["version"]
+        rescue Aws::LexModelBuildingService::Errors::ServiceError => e
+          nil
+        end
+      end
+
+      def create_intent_version name, checksum
+        params = {name: name, checksum: checksum}
+        begin
+          intent = @lex.create_intent_version params
+          intent["version"]
+        rescue Aws::LexModelBuildingService::Errors::ServiceError => e
+          nil
+        end
+      end
+
+      def create_bot_version name, checksum
+        params = {name: name, checksum: checksum}
+        begin
+          bot = @lex.create_bot_version params
+          bot["version"]
+        rescue Aws::LexModelBuildingService::Errors::ServiceError => e
+          nil
+        end
+      end
       def put_slot_type slot_type_definition
         begin
           @lex.put_slot_type slot_type_definition
