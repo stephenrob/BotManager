@@ -136,6 +136,15 @@ module BotManager
         end
       end
 
+      def delete_bot_alias bot_name, alias_name
+        params = {bot_name: bot_name, alias: alias_name}
+        begin
+          @lex.delete_bot_alias params
+        rescue Aws::LexModelBuildingService::Errors::NotFoundException => e
+          puts e
+        end
+      end
+
     end
 
   end
