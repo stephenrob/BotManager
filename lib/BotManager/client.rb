@@ -16,6 +16,7 @@ require 'BotManager/alexa/manifest/privacy_and_compliance'
 require 'BotManager/alexa/manifest/locale'
 require 'BotManager/alexa/manifest/publishing_options'
 require 'BotManager/alexa'
+require 'BotManager/aws'
 
 module BotManager
 
@@ -196,6 +197,66 @@ module BotManager
           version = @lex_manager.register_intent lex_intent
 
           lex_bot.register_intent intent_name, version
+
+        end
+
+        sleep 5
+
+        bot.aws_qna_intents.each do |qna_intent|
+
+          aws_qna_intent = Aws::QnaBot.new qna_intent[:qna_bot_name], qna_intent[:qna_bot_version]
+
+          slot_type_name = generate_lex_full_name "#{qna_intent[:name]}SlotType"
+
+          lex_slot_type = Lex::SlotType.new slot_type_name, "AWS QnA Bot Intent Slot"
+
+          aws_qna_intent.get_slot_enumerations.each do |value|
+            enumeration_value = Lex::EnumerationValue.new value[:value]
+            if !value[:synonyms].nil?
+              value[:synonyms].each do |synonym|
+                enumeration_value.add_synonym synonym
+              end
+            end
+            lex_slot_type.add_enumeration_value enumeration_value
+          end
+
+          slot_version = @lex_manager.register_slot_type lex_slot_type
+
+          @slot_type_versions[slot_type_name] = slot_version
+
+          intent_name = generate_lex_full_name qna_intent[:name]
+
+          lex_intent = Lex::Intent.new intent_name, "QnA Questioning"
+
+          lex_intent.add_sample_utterance "{qnaSlot}"
+
+          fulfillment_activity = aws_qna_intent.get_fulfillment_activity
+
+          if !fulfillment_activity.nil? && !fulfillment_activity.empty?
+            lex_fulfillment_activity = Lex::CodeHookFulfillmentActivity.new fulfillment_activity[:code_hook][:uri]
+            lex_intent.set_fulfillment_activity lex_fulfillment_activity
+          end
+
+          lex_intent_slot = Lex::IntentSlot.new "qnaSlot", "Question"
+
+          lex_intent_slot.slot_type = slot_type_name
+          lex_intent_slot.slot_type_version = slot_version
+          lex_intent_slot.slot_constraint = "Optional"
+
+          lex_value_elicitation_prompt = Lex::ValueElicitationPrompt.new 1
+          [{:content_type => "PlainText", :content => "prompt"}].each do |message|
+            lex_value_elicitation_prompt.add_message message[:content_type], message[:content]
+          end
+
+          lex_intent_slot.set_value_elicitation_prompt lex_value_elicitation_prompt
+
+          lex_intent.register_slot lex_intent_slot
+
+          intent_version = @lex_manager.register_intent lex_intent
+
+          @intent_versions[intent_name] = intent_version
+
+          lex_bot.register_intent intent_name, intent_version
 
         end
 
