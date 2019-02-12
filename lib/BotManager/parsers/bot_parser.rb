@@ -38,6 +38,10 @@ module BotManager
         @bot[:intents]
       end
 
+      def aws_qna_intents
+        @bot[:aws_qna_intents]
+      end
+
     end
 
   end

@@ -11,7 +11,7 @@ module BotManager
 
       def initialize client_id, client_secret, refresh_token, vendor_id
         @client = Api::Client.new client_id, client_secret, refresh_token
-        @lambda = Aws::Lambda::Client.new
+        @lambda = ::Aws::Lambda::Client.new
         @vendor_id = vendor_id
         @skills = {}
         pre_load_skills

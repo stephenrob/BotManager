@@ -112,7 +112,7 @@ module BotManager
 
             @lex_client.delete_slot_type_version slot_type_name, version_id
 
-            sleep(3)
+            sleep(5)
 
           end
 
@@ -140,7 +140,7 @@ module BotManager
 
             @lex_client.delete_intent_version intent_name, version_id
 
-            sleep(3)
+            sleep(5)
 
           end
 
@@ -168,7 +168,7 @@ module BotManager
 
             @lex_client.delete_bot_version bot_name, version_id
 
-            sleep(3)
+            sleep(5)
 
           end
 

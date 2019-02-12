@@ -16,6 +16,7 @@ require 'BotManager/alexa/manifest/privacy_and_compliance'
 require 'BotManager/alexa/manifest/locale'
 require 'BotManager/alexa/manifest/publishing_options'
 require 'BotManager/alexa'
+require 'BotManager/aws'
 
 module BotManager
 
@@ -196,6 +197,66 @@ module BotManager
           version = @lex_manager.register_intent lex_intent
 
           lex_bot.register_intent intent_name, version
+
+        end
+
+        sleep 5
+
+        bot.aws_qna_intents.each do |qna_intent|
+
+          aws_qna_intent = Aws::QnaBot.new qna_intent[:qna_bot_name], qna_intent[:qna_bot_version]
+
+          slot_type_name = generate_lex_full_name "#{qna_intent[:name]}SlotType"
+
+          lex_slot_type = Lex::SlotType.new slot_type_name, "AWS QnA Bot Intent Slot"
+
+          aws_qna_intent.get_slot_enumerations.each do |value|
+            enumeration_value = Lex::EnumerationValue.new value[:value]
+            if !value[:synonyms].nil?
+              value[:synonyms].each do |synonym|
+                enumeration_value.add_synonym synonym
+              end
+            end
+            lex_slot_type.add_enumeration_value enumeration_value
+          end
+
+          slot_version = @lex_manager.register_slot_type lex_slot_type
+
+          @slot_type_versions[slot_type_name] = slot_version
+
+          intent_name = generate_lex_full_name qna_intent[:name]
+
+          lex_intent = Lex::Intent.new intent_name, "QnA Questioning"
+
+          lex_intent.add_sample_utterance "{qnaSlot}"
+
+          fulfillment_activity = aws_qna_intent.get_fulfillment_activity
+
+          if !fulfillment_activity.nil? && !fulfillment_activity.empty?
+            lex_fulfillment_activity = Lex::CodeHookFulfillmentActivity.new fulfillment_activity[:code_hook][:uri]
+            lex_intent.set_fulfillment_activity lex_fulfillment_activity
+          end
+
+          lex_intent_slot = Lex::IntentSlot.new "qnaSlot", "Question"
+
+          lex_intent_slot.slot_type = slot_type_name
+          lex_intent_slot.slot_type_version = slot_version
+          lex_intent_slot.slot_constraint = "Optional"
+
+          lex_value_elicitation_prompt = Lex::ValueElicitationPrompt.new 1
+          [{:content_type => "PlainText", :content => "prompt"}].each do |message|
+            lex_value_elicitation_prompt.add_message message[:content_type], message[:content]
+          end
+
+          lex_intent_slot.set_value_elicitation_prompt lex_value_elicitation_prompt
+
+          lex_intent.register_slot lex_intent_slot
+
+          intent_version = @lex_manager.register_intent lex_intent
+
+          @intent_versions[intent_name] = intent_version
+
+          lex_bot.register_intent intent_name, intent_version
 
         end
 
@@ -535,6 +596,69 @@ module BotManager
             interaction_model.register_prompt prompts[intent_prompt_id]
 
           end
+
+        end
+
+        bot.aws_qna_intents.each do |qna_intent|
+
+          aws_qna_intent = Aws::QnaBot.new qna_intent[:qna_bot_name], qna_intent[:qna_bot_version]
+
+          name = qna_intent[:name]
+
+          slot_type_name = "#{name}SlotType"
+
+          type = BotManager::Alexa::LanguageModel::Type.new slot_type_name
+
+          aws_qna_intent.get_slot_enumerations.each do |enum|
+            type.add_value enum[:value], enum[:synonyms]
+          end
+
+          language_types[slot_type_name] = type
+
+          language_intent = BotManager::Alexa::LanguageModel::Intent.new name
+          dialog_intent = BotManager::Alexa::Dialog::Intent.new name, false
+          intent_prompts[name] = []
+
+          slot_name = "#{name}Slot"
+
+          dialog_slot = BotManager::Alexa::Dialog::Slot.new slot_name, slot_type_name, false, true
+          language_slot = BotManager::Alexa::LanguageModel::Slot.new slot_name, slot_type_name
+
+
+          language_slot.add_sample "{#{slot_name}}"
+
+          elicitation_prompt = BotManager::Alexa::Prompt::SlotElicitation.new name, slot_name
+
+          elicitation_prompt.add_variation "PlainText", "prompt"
+
+          prompts[elicitation_prompt.id] = elicitation_prompt
+          intent_prompts[name].append elicitation_prompt.id
+
+          dialog_slot.set_elicitation elicitation_prompt
+
+          language_slots[slot_name] = language_slot
+          dialog_slots[slot_name] = dialog_slot
+
+          dialog_intent.add_slot dialog_slot
+          language_intent.add_slot language_slot
+
+          language_intents[name] = language_intent
+          dialog_intents[name] = dialog_intent
+
+          dialog_model.register_intent dialog_intent
+          language_model.register_intent language_intent
+
+          language_intent.slots.each do |lang_slot|
+
+            type = lang_slot[:type]
+
+            language_type = language_types[type]
+
+            language_model.register_type language_type
+
+          end
+
+          interaction_model.register_prompt prompts[elicitation_prompt.id]
 
         end
 
