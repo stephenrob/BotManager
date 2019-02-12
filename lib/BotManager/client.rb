@@ -599,6 +599,69 @@ module BotManager
 
         end
 
+        bot.aws_qna_intents.each do |qna_intent|
+
+          aws_qna_intent = Aws::QnaBot.new qna_intent[:qna_bot_name], qna_intent[:qna_bot_version]
+
+          name = qna_intent[:name]
+
+          slot_type_name = "#{name}SlotType"
+
+          type = BotManager::Alexa::LanguageModel::Type.new slot_type_name
+
+          aws_qna_intent.get_slot_enumerations.each do |enum|
+            type.add_value enum[:value], enum[:synonyms]
+          end
+
+          language_types[slot_type_name] = type
+
+          language_intent = BotManager::Alexa::LanguageModel::Intent.new name
+          dialog_intent = BotManager::Alexa::Dialog::Intent.new name, false
+          intent_prompts[name] = []
+
+          slot_name = "#{name}Slot"
+
+          dialog_slot = BotManager::Alexa::Dialog::Slot.new slot_name, slot_type_name, false, true
+          language_slot = BotManager::Alexa::LanguageModel::Slot.new slot_name, slot_type_name
+
+
+          language_slot.add_sample "{#{slot_name}}"
+
+          elicitation_prompt = BotManager::Alexa::Prompt::SlotElicitation.new name, slot_name
+
+          elicitation_prompt.add_variation "PlainText", "prompt"
+
+          prompts[elicitation_prompt.id] = elicitation_prompt
+          intent_prompts[name].append elicitation_prompt.id
+
+          dialog_slot.set_elicitation elicitation_prompt
+
+          language_slots[slot_name] = language_slot
+          dialog_slots[slot_name] = dialog_slot
+
+          dialog_intent.add_slot dialog_slot
+          language_intent.add_slot language_slot
+
+          language_intents[name] = language_intent
+          dialog_intents[name] = dialog_intent
+
+          dialog_model.register_intent dialog_intent
+          language_model.register_intent language_intent
+
+          language_intent.slots.each do |lang_slot|
+
+            type = lang_slot[:type]
+
+            language_type = language_types[type]
+
+            language_model.register_type language_type
+
+          end
+
+          interaction_model.register_prompt prompts[elicitation_prompt.id]
+
+        end
+
         @alexa_amazon_intents.each do |intent_name|
 
           language_intent = language_intents[intent_name]
