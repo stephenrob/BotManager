@@ -697,6 +697,8 @@ module BotManager
 
       formatted_name = name.gsub(/\s+/, '')
 
+      formatted_name = formatted_name.gsub(/\./, '')
+
       release_data = get_current_release_data
 
       skill_suffix = release_data["lex_suffix"]
