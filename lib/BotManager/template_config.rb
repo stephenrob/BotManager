@@ -10,7 +10,7 @@ module BotManager
     @account_linking_access_token_url = nil
 
     class << self
-      attr_accessor :account_id, :deploy_env, :account_linking_authorization_url, :account_linking_client_id, :account_linking_client_secret, :account_linking_access_token_url, :qna_id, :qna_bot_name, :qna_bot_version
+      attr_accessor :account_id, :deploy_env, :account_linking_authorization_url, :account_linking_client_id, :account_linking_client_secret, :account_linking_access_token_url, :qna_id, :qna_bot_name, :qna_bot_version, :bot_name
     end
 
   end

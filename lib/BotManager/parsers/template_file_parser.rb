@@ -19,6 +19,7 @@ module BotManager
         file = file.gsub('${QNA_ID}', BotManager::TemplateConfig.qna_id)
         file = file.gsub('${QNA_BOT_NAME}', BotManager::TemplateConfig.qna_bot_name)
         file = file.gsub('${QNA_BOT_VERSION}', BotManager::TemplateConfig.qna_bot_version)
+        file = file.gsub('${BOT_NAME}', BotManager::TemplateConfig.bot_name)
 
         file
 
