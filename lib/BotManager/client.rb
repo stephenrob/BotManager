@@ -699,7 +699,7 @@ module BotManager
 
       release_data = get_current_release_data
 
-      skill_suffix = release_data["skill_suffix"]
+      skill_suffix = release_data["lex_suffix"]
 
       if skill_suffix.nil? || skill_suffix.empty?
         return formatted_name
