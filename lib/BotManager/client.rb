@@ -126,15 +126,56 @@ module BotManager
           puts "No slots to load for intent"
         else
           intent.slots.each do |slot|
+
             parsed_slot = Parsers::SlotParser.new slot
 
+            intent_slot_name = parsed_slot.name
+
             if parsed_slot.type.start_with?('AMAZON')
-              intent_slot_type = parsed_slot.type
+
+              if parsed_slot.type == 'AMAZON.SearchQuery'
+
+                search_slot_type_name = generate_lex_full_name 'searchQuery'
+
+                if @slot_type_versions[search_slot_type_name].nil?
+
+                  version = @lex_manager.get_recent_slot_type_version search_slot_type_name
+
+                  if version.nil?
+
+                    lex_search_slot_type = Lex::SlotType.new search_slot_type_name, "AMAZON.SearchQuery slot for #{intent_name}"
+
+                    [{value: 'dummySearchString'}].each do |value|
+                      enumeration_value = Lex::EnumerationValue.new value[:value]
+                      if !value[:synonyms].nil?
+                        value[:synonyms].each do |synonym|
+                          enumeration_value.add_synonym synonym
+                        end
+                      end
+                      lex_search_slot_type.add_enumeration_value enumeration_value
+                    end
+
+                    lex_search_slot_version = @lex_manager.register_slot_type lex_search_slot_type
+
+                  else
+                    lex_search_slot_version = version
+                  end
+
+                  @slot_type_versions[search_slot_type_name] = lex_search_slot_version
+
+                end
+
+                intent_slot_type = search_slot_type_name
+
+              else
+
+                intent_slot_type = parsed_slot.type
+
+              end
+
             else
               intent_slot_type = generate_lex_full_name parsed_slot.type
             end
-
-            intent_slot_name = parsed_slot.name
 
             lex_intent_slot = Lex::IntentSlot.new intent_slot_name, parsed_slot.description
 
