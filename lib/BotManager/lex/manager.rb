@@ -10,6 +10,22 @@ module BotManager
         @lex_client = Client.new
       end
 
+      def get_recent_slot_type_version slot_type_name
+
+        versions = @lex_client.get_slot_type_versions slot_type_name
+
+        versions = versions.keep_if {|v| v[:version] != '$LATEST'}
+
+        if versions.length == 0
+          return '$LATEST'
+        end
+
+        versions.sort! {|a, b| b[:version] <=> a[:version]}
+
+        versions[0][:version]
+
+      end
+
       def register_slot_type slot_type
 
         puts "Registering slot type: #{slot_type.name}"
