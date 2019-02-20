@@ -186,7 +186,10 @@ module BotManager
         params = {name: bot_name, version_or_alias: version_or_alias}
         begin
           bot = @lex.get_bot params
-          bot["status"]
+          {
+              status: bot["status"],
+              failure_reason: bot["failure_reason"]
+          }
         rescue ::Aws::LexModelBuildingService::Errors::NotFoundException => e
           puts e
           nil
