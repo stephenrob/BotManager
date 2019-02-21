@@ -556,6 +556,33 @@ module BotManager
 
             end
 
+            if !slot[:alexa][:validation].nil? && !slot[:alexa][:validation].empty?
+
+              validation = slot[:alexa][:validation]
+
+              slot_validation_prompt = BotManager::Alexa::Prompt::SlotValidation.new bot_intent.name, slot.name
+
+              validation[:prompt][:variations].each do |variation|
+                slot_validation_prompt.add_variation variation[:type], variation[:value]
+              end
+
+              slot_validation = BotManager::Alexa::Dialog::SlotValidation.new validation[:type]
+
+              slot_validation.set_validation_prompt slot_validation_prompt
+
+              if !validation[:values].nil? && !validation[:values].empty?
+                validation[:values].each do |value|
+                  slot_validation.add_value value
+                end
+              end
+
+              prompts[slot_validation_prompt.id] = slot_validation_prompt
+              intent_prompts[name].append slot_validation_prompt.id
+
+              dialog_slot.add_validation slot_validation
+
+            end
+
             language_slots[slot.name] = language_slot
             dialog_slots[slot.name] = dialog_slot
 
