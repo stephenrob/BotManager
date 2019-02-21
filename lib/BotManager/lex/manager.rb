@@ -10,6 +10,22 @@ module BotManager
         @lex_client = Client.new
       end
 
+      def get_recent_slot_type_version slot_type_name
+
+        versions = @lex_client.get_slot_type_versions slot_type_name
+
+        versions = versions.keep_if {|v| v[:version] != '$LATEST'}
+
+        if versions.length == 0
+          return '$LATEST'
+        end
+
+        versions.sort! {|a, b| b[:version] <=> a[:version]}
+
+        versions[0][:version]
+
+      end
+
       def register_slot_type slot_type
 
         puts "Registering slot type: #{slot_type.name}"
@@ -56,10 +72,10 @@ module BotManager
 
         version = @lex_client.create_bot_version bot.name, put_response["checksum"]
 
-        bot_build_status = "NOT_BUILT"
+        bot_build_status = {status: "NOT_BUILT"}
         i = 0
 
-        while ["BUILDING", "NOT_BUILT"].include?(bot_build_status)
+        while check_build_status_in ["BUILDING", "NOT_BUILT"], "#{bot_build_status[:status]}"
 
           puts "Waiting for bot: #{bot.name} to be built"
 
@@ -74,6 +90,12 @@ module BotManager
             return version
           end
 
+        end
+
+        if bot_build_status[:status] == 'FAILED'
+          puts "Failed to build bot: #{bot.name}"
+          puts "Failure Caused by: #{bot_build_status[:failure_reason]}"
+          raise "FailedToBuildBot"
         end
 
         puts "Finished building bot: #{bot.name}"
@@ -173,6 +195,12 @@ module BotManager
           end
 
         end
+
+      end
+
+      def check_build_status_in array, build_status
+
+        array.include?(build_status)
 
       end
 

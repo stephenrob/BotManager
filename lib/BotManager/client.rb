@@ -126,15 +126,38 @@ module BotManager
           puts "No slots to load for intent"
         else
           intent.slots.each do |slot|
+
             parsed_slot = Parsers::SlotParser.new slot
 
+            intent_slot_name = parsed_slot.name
+
             if parsed_slot.type.start_with?('AMAZON')
-              intent_slot_type = parsed_slot.type
+
+              if parsed_slot.type == 'AMAZON.SearchQuery'
+
+                search_slot_type_name = generate_lex_full_name 'searchQuery'
+
+                if @slot_type_versions[search_slot_type_name].nil?
+
+                  lex_search_slot_type = Lex::SearchQuerySlotType.new search_slot_type_name, "AMAZON.SearchQuery slot for lex"
+
+                  lex_search_slot_version = @lex_manager.register_slot_type lex_search_slot_type
+
+                  @slot_type_versions[search_slot_type_name] = lex_search_slot_version
+
+                end
+
+                intent_slot_type = search_slot_type_name
+
+              else
+
+                intent_slot_type = parsed_slot.type
+
+              end
+
             else
               intent_slot_type = generate_lex_full_name parsed_slot.type
             end
-
-            intent_slot_name = parsed_slot.name
 
             lex_intent_slot = Lex::IntentSlot.new intent_slot_name, parsed_slot.description
 
@@ -512,6 +535,33 @@ module BotManager
               intent_prompts[name].append elicitation_prompt.id
 
               dialog_slot.set_elicitation elicitation_prompt
+
+            end
+
+            if !slot[:alexa][:validation].nil? && !slot[:alexa][:validation].empty?
+
+              validation = slot[:alexa][:validation]
+
+              slot_validation_prompt = BotManager::Alexa::Prompt::SlotValidation.new bot_intent.name, slot.name
+
+              validation[:prompt][:variations].each do |variation|
+                slot_validation_prompt.add_variation variation[:type], variation[:value]
+              end
+
+              slot_validation = BotManager::Alexa::Dialog::SlotValidation.new validation[:type]
+
+              slot_validation.set_validation_prompt slot_validation_prompt
+
+              if !validation[:values].nil? && !validation[:values].empty?
+                validation[:values].each do |value|
+                  slot_validation.add_value value
+                end
+              end
+
+              prompts[slot_validation_prompt.id] = slot_validation_prompt
+              intent_prompts[name].append slot_validation_prompt.id
+
+              dialog_slot.add_validation slot_validation
 
             end
 
