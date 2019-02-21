@@ -17,9 +17,9 @@ module BotManager
       private
 
       def load_default_enumerations
-        default_enumerations = JSON.parse("#{__dir__}/assets/default_search_enumerations.json")
+        default_enumerations = JSON.parse(File.read("#{__dir__}/assets/default_search_enumerations.json"))
 
-        default_enumerations.each do |value|
+        default_enumerations["enumerations"].each do |value|
           enumeration = EnumerationValue.new value
           add_enumeration_value enumeration
         end
