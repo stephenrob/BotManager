@@ -9,10 +9,12 @@ module BotManager
 
       class SlotValidation
 
-        attr_reader :variations
+        attr_reader :variations, :intent, :slot
 
-        def initialize intent
+        def initialize intent, slot
           @variations = Set.new
+          @intent = intent
+          @slot = slot
         end
 
         def add_variation type, value
@@ -21,7 +23,7 @@ module BotManager
         end
 
         def id
-          "Slot.Validation.ID.ID.SOMETHING"
+          "Slot.Validation.Intent-#{@intent}.IntentSlot-#{@slot}"
         end
 
         def to_h
