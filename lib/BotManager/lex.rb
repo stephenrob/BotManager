@@ -7,6 +7,7 @@ require 'BotManager/lex/enumeration_value'
 require 'BotManager/lex/intent'
 require 'BotManager/lex/intent_slot'
 require 'BotManager/lex/slot_type'
+require 'BotManager/lex/search_query_slot_type'
 require 'BotManager/lex/statement'
 require 'BotManager/lex/value_elicitation_prompt'
 
