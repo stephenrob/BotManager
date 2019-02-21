@@ -139,17 +139,9 @@ module BotManager
 
                 if @slot_type_versions[search_slot_type_name].nil?
 
-                  version = @lex_manager.get_recent_slot_type_version search_slot_type_name
+                  lex_search_slot_type = Lex::SearchQuerySlotType.new search_slot_type_name, "AMAZON.SearchQuery slot for lex"
 
-                  if version.nil?
-
-                    lex_search_slot_type = Lex::SearchQuerySlotType search_slot_type_name, "AMAZON.SearchQuery slot for #{intent_name}"
-
-                    lex_search_slot_version = @lex_manager.register_slot_type lex_search_slot_type
-
-                  else
-                    lex_search_slot_version = version
-                  end
+                  lex_search_slot_version = @lex_manager.register_slot_type lex_search_slot_type
 
                   @slot_type_versions[search_slot_type_name] = lex_search_slot_version
 
