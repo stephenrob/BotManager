@@ -143,17 +143,7 @@ module BotManager
 
                   if version.nil?
 
-                    lex_search_slot_type = Lex::SlotType.new search_slot_type_name, "AMAZON.SearchQuery slot for #{intent_name}"
-
-                    [{value: 'dummySearchString'}].each do |value|
-                      enumeration_value = Lex::EnumerationValue.new value[:value]
-                      if !value[:synonyms].nil?
-                        value[:synonyms].each do |synonym|
-                          enumeration_value.add_synonym synonym
-                        end
-                      end
-                      lex_search_slot_type.add_enumeration_value enumeration_value
-                    end
+                    lex_search_slot_type = Lex::SearchQuerySlotType search_slot_type_name, "AMAZON.SearchQuery slot for #{intent_name}"
 
                     lex_search_slot_version = @lex_manager.register_slot_type lex_search_slot_type
 
