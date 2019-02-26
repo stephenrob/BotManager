@@ -260,7 +260,7 @@ module BotManager
             lex_intent.set_fulfillment_activity lex_fulfillment_activity
           end
 
-          lex_intent_slot = Lex::IntentSlot.new "qnaSlot", "Question"
+          lex_intent_slot = Lex::IntentSlot.new slot_type_name, "Question"
 
           lex_intent_slot.slot_type = slot_type_name
           lex_intent_slot.slot_type_version = slot_version
