@@ -251,7 +251,7 @@ module BotManager
 
           lex_intent = Lex::Intent.new intent_name, "QnA Questioning"
 
-          lex_intent.add_sample_utterance "{qnaSlot}"
+          lex_intent.add_sample_utterance "{#{slot_type_name}}"
 
           fulfillment_activity = aws_qna_intent.get_fulfillment_activity
 
