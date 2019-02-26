@@ -494,6 +494,8 @@ module BotManager
 
         name = bot_intent.name
 
+        puts "Intent: #{name}"
+
         language_intent = BotManager::Alexa::LanguageModel::Intent.new name
         dialog_intent = BotManager::Alexa::Dialog::Intent.new name, false
         intent_prompts[name] = []
@@ -538,9 +540,9 @@ module BotManager
 
             end
 
-            if !slot[:alexa][:validation].nil? && !slot[:alexa][:validation].empty?
+            if !slot.alexa[:validation].nil? && !slot.alexa[:validation].empty?
 
-              validation = slot[:alexa][:validation]
+              validation = slot.alexa[:validation]
 
               slot_validation_prompt = BotManager::Alexa::Prompt::SlotValidation.new bot_intent.name, slot.name
 
@@ -674,8 +676,7 @@ module BotManager
           dialog_slot = BotManager::Alexa::Dialog::Slot.new slot_name, slot_type_name, false, true
           language_slot = BotManager::Alexa::LanguageModel::Slot.new slot_name, slot_type_name
 
-
-          language_slot.add_sample "{#{slot_name}}"
+          language_intent.add_sample "{#{slot_name}}"
 
           elicitation_prompt = BotManager::Alexa::Prompt::SlotElicitation.new name, slot_name
 
