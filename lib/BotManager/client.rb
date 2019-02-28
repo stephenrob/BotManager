@@ -31,6 +31,7 @@ module BotManager
       @intent_versions = {}
       @bots = {}
       @bot_versions = {}
+      @builtin_intents = {}
       @alexa_amazon_intents = ["AMAZON.FallbackIntent", "AMAZON.CancelIntent", "AMAZON.HelpIntent", "AMAZON.StopIntent", "AMAZON.YesIntent", "AMAZON.NoIntent"]
       @lex_valid_amazon_intents = ["AMAZON.HelpIntent"]
       @lex_manager = Lex::Manager.new
@@ -44,7 +45,11 @@ module BotManager
 
     def load_intent intent_file
       parsed_intent = Parsers::IntentParser.new intent_file
-      @intents[parsed_intent.name] = parsed_intent
+      if !parsed_intent.type.nil? && parsed_intent.type.start_with?('AMAZON.')
+        @builtin_intents[parsed_intent.type] = parsed_intent
+      else
+        @intents[parsed_intent.name] = parsed_intent
+      end
     end
 
     def load_bot bot_file
