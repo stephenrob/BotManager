@@ -22,6 +22,10 @@ module BotManager
         @intent[:description]
       end
 
+      def type
+        @intent[:type]
+      end
+
       def sample_utterances
         @intent[:sample_utterances]
       end

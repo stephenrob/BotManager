@@ -31,6 +31,7 @@ module BotManager
       @intent_versions = {}
       @bots = {}
       @bot_versions = {}
+      @builtin_intents = {}
       @alexa_amazon_intents = ["AMAZON.FallbackIntent", "AMAZON.CancelIntent", "AMAZON.HelpIntent", "AMAZON.StopIntent", "AMAZON.YesIntent", "AMAZON.NoIntent"]
       @lex_valid_amazon_intents = ["AMAZON.HelpIntent"]
       @lex_manager = Lex::Manager.new
@@ -44,7 +45,11 @@ module BotManager
 
     def load_intent intent_file
       parsed_intent = Parsers::IntentParser.new intent_file
-      @intents[parsed_intent.name] = parsed_intent
+      if !parsed_intent.type.nil? && parsed_intent.type.start_with?('AMAZON.')
+        @builtin_intents[parsed_intent.type] = parsed_intent
+      else
+        @intents[parsed_intent.name] = parsed_intent
+      end
     end
 
     def load_bot bot_file
@@ -206,20 +211,43 @@ module BotManager
 
           next unless @lex_valid_amazon_intents.include? builtin_intent[:type]
 
-          intent_name = generate_lex_full_name builtin_intent[:name]
+          if @builtin_intents[builtin_intent[:type]].nil?
 
-          lex_intent = Lex::BuiltInIntent.new builtin_intent[:type], intent_name
+            intent_name = generate_lex_full_name builtin_intent[:name]
 
-          fulfillment_activity = builtin_intent[:fulfillment_activity]
+            lex_intent = Lex::BuiltInIntent.new builtin_intent[:type], intent_name
 
-          if !fulfillment_activity.nil? && !fulfillment_activity.empty?
-            lex_fulfillment_activity = Lex::CodeHookFulfillmentActivity.new fulfillment_activity[:uri]
-            lex_intent.set_fulfillment_activity lex_fulfillment_activity
+            fulfillment_activity = builtin_intent[:fulfillment_activity]
+
+            if !fulfillment_activity.nil? && !fulfillment_activity.empty?
+              lex_fulfillment_activity = Lex::CodeHookFulfillmentActivity.new fulfillment_activity[:uri]
+              lex_intent.set_fulfillment_activity lex_fulfillment_activity
+            end
+
+            version = @lex_manager.register_intent lex_intent
+
+            lex_bot.register_intent intent_name, version
+
+          else
+
+            custom_builtin_intent = @builtin_intents[builtin_intent[:type]]
+
+            intent_name = generate_lex_full_name custom_builtin_intent.name
+
+            lex_intent = Lex::BuiltInIntent.new builtin_intent[:type], intent_name
+
+            fulfillment_activity = custom_builtin_intent.lex[:fulfillment_activity]
+
+            if !fulfillment_activity.nil? && !fulfillment_activity.empty?
+              lex_fulfillment_activity = Lex::CodeHookFulfillmentActivity.new fulfillment_activity[:uri]
+              lex_intent.set_fulfillment_activity lex_fulfillment_activity
+            end
+
+            version = @lex_manager.register_intent lex_intent
+
+            lex_bot.register_intent intent_name, version
+
           end
-
-          version = @lex_manager.register_intent lex_intent
-
-          lex_bot.register_intent intent_name, version
 
         end
 
@@ -597,6 +625,15 @@ module BotManager
       @alexa_amazon_intents.each do |intent_name|
 
         language_intent = BotManager::Alexa::LanguageModel::Intent.new intent_name
+
+        if !@builtin_intents[intent_name].nil?
+
+          custom_builtin_intent = @builtin_intents[intent_name]
+
+          custom_builtin_intent.sample_utterances.each do |utterance|
+            language_intent.add_sample utterance
+          end
+        end
 
         language_intents[intent_name] = language_intent
 
