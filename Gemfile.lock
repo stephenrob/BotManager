@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     BotManager (0.1.0)
+      alexa-smapi (~> 0.1.0)
       aws-sdk-lambda (~> 1.10.0)
       aws-sdk-lexmodelbuildingservice (~> 1.10.0)
       oauth2 (~> 1.4.1)
@@ -9,9 +10,11 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    alexa-smapi (0.1.0)
+      oauth2 (~> 1.4.1)
     aws-eventstream (1.0.1)
-    aws-partitions (1.117.0)
-    aws-sdk-core (3.40.0)
+    aws-partitions (1.141.0)
+    aws-sdk-core (3.46.2)
       aws-eventstream (~> 1.0)
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.0)

@@ -43,4 +43,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "aws-sdk-lexmodelbuildingservice", "~> 1.10.0"
   spec.add_dependency "aws-sdk-lambda", "~> 1.10.0"
   spec.add_dependency "oauth2", "~> 1.4.1"
+  spec.add_dependency "alexa-smapi", "~> 0.1.0"
 end
