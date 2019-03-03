@@ -1,7 +1,7 @@
-require 'BotManager/alexa/api/client'
 require 'BotManager/alexa/builders/skill_manifest_builder'
 require 'BotManager/alexa/builders/new_skill_manifest_builder'
 require 'aws-sdk-lambda'
+require 'alexa/smapi'
 
 module BotManager
 
@@ -10,7 +10,7 @@ module BotManager
     class Manager
 
       def initialize client_id, client_secret, refresh_token, vendor_id
-        @client = Api::Client.new client_id, client_secret, refresh_token
+        @client = ::Alexa::SMAPI::Client.new client_id, client_secret, refresh_token
         @lambda = ::Aws::Lambda::Client.new
         @vendor_id = vendor_id
         @skills = {}
